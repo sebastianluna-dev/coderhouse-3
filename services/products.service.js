@@ -4,12 +4,17 @@ module.exports = class File {
 
     constructor(fileName) {
         this._fileName = fileName
-        this._counter = 0
+        this._counter = 1
     }
     async save(object) {
-        this._counter = this._counter + 1
+        this._counter = 1
         const fileContent = await readFile(`./${this._fileName}`, { encoding: "utf-8", flag:'r'})
         const objectArray = JSON.parse(fileContent)
+        let isObject = objectArray.find(obj => obj.id === this._counter)
+        while (isObject) {
+            this._counter = this._counter + 1
+            isObject = objectArray.find(obj => obj.id === this._counter)
+        }
         const newObject =  {...object, id: this._counter}
         objectArray.push(newObject)
         await writeFile(`./${this._fileName}`, JSON.stringify(objectArray),{ encoding: "utf-8", flag:'w'})
